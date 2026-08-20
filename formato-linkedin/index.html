@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
+  <meta name="theme-color" content="#fffaf5">
+  <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+  <title>Formato para LinkedIn · Rojo Apps</title>
+  <meta name="description" content="Escribe, formatea y copia publicaciones para LinkedIn. Gratis, sin registro y directamente en tu navegador.">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="../" aria-label="Volver a Rojo Apps"><span class="brand-mark">R</span><span>rojo. apps</span></a>
+    <div class="top-actions"><span class="privacy"><span class="privacy-dot"></span>Tu texto no sale de este dispositivo</span><button class="icon-button theme-button" id="themeButton" type="button" aria-label="Cambiar tema" title="Cambiar tema">◐</button></div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <div>
+        <a class="back" href="../">← Todas las aplicaciones</a>
+        <h1>Formato para <span>LinkedIn</span></h1>
+        <p>Escribe con calma. Da énfasis a lo importante. Copia y publica.</p>
+      </div>
+      <aside class="tip"><strong>Menos es más.</strong><span>Usa el formato en frases cortas. Es más legible y accesible.</span></aside>
+    </section>
+
+    <section class="workspace">
+      <article class="panel editor-panel">
+        <div class="panel-heading"><div><h2>Escribe y da formato</h2></div><button class="text-button danger" id="clearAll" type="button">Limpiar</button></div>
+
+        <div class="toolbar" role="group" aria-label="Formato del texto">
+          <div class="tool-group primary-tools">
+            <button class="tool format-tool" data-format="bold" type="button" title="Negrita (Ctrl+B)" aria-label="Negrita"><strong>B</strong></button>
+            <button class="tool format-tool" data-format="italic" type="button" title="Cursiva (Ctrl+I)" aria-label="Cursiva"><em>I</em></button>
+            <button class="tool format-tool" data-format="underline" type="button" title="Subrayado" aria-label="Subrayado"><u>U</u></button>
+            <button class="tool format-tool" data-format="strike" type="button" title="Tachado" aria-label="Tachado"><s>S</s></button>
+          </div>
+          <span class="separator" aria-hidden="true"></span>
+          <div class="tool-group list-tools">
+            <button class="tool list-tool" data-list="bullet" type="button" title="Lista con viñetas" aria-label="Lista con viñetas">•≡</button>
+            <button class="tool list-tool" data-list="number" type="button" title="Lista numerada" aria-label="Lista numerada">1≡</button>
+          </div>
+          <button class="tool more-button" id="moreButton" type="button" aria-label="Más herramientas" aria-expanded="false" aria-controls="morePopover">•••</button>
+          <span class="separator secondary-separator" aria-hidden="true"></span>
+          <div class="more-popover" id="morePopover">
+            <button class="tool format-tool menu-action" data-format="boldItalic" type="button" title="Negrita cursiva" aria-label="Negrita cursiva"><strong><em>BI</em></strong><span class="menu-label">Negrita cursiva</span></button>
+            <button class="tool menu-action" id="symbolsButton" type="button" title="Símbolos útiles" aria-label="Símbolos útiles" aria-expanded="false" aria-controls="symbolsPopover"><span>✦</span><span class="menu-label">Símbolos</span></button>
+            <button class="tool menu-action" id="removeFormat" type="button" title="Quitar formato" aria-label="Quitar formato"><span>Tx</span><span class="menu-label">Quitar formato</span></button>
+            <span class="toolbar-spacer"></span>
+            <div class="tool-group history-tools">
+              <button class="tool menu-action" id="undoButton" type="button" title="Deshacer (Ctrl+Z)" aria-label="Deshacer"><span>↶</span><span class="menu-label">Deshacer</span></button>
+              <button class="tool menu-action" id="redoButton" type="button" title="Rehacer (Ctrl+Y)" aria-label="Rehacer"><span>↷</span><span class="menu-label">Rehacer</span></button>
+            </div>
+            <button class="tool menu-action menu-danger" id="menuClearAll" type="button" aria-label="Limpiar todo"><span>⌫</span><span class="menu-label">Limpiar todo</span></button>
+          </div>
+          <div class="symbols-popover" id="symbolsPopover" hidden>
+            <div class="popover-head"><strong>Símbolos útiles</strong><span>Haz clic para insertar</span></div>
+            <div class="symbol-grid" id="symbolGrid"></div>
+          </div>
+        </div>
+
+        <div class="editor-wrap">
+          <label class="sr-only" for="postEditor">Texto de tu publicación</label>
+          <textarea id="postEditor" spellcheck="true" wrap="soft" aria-describedby="saveStatus charCount charStatus" placeholder="Pega o escribe aquí tu publicación…"></textarea>
+          <div class="editor-meta">
+            <span id="saveStatus">Guardado en este dispositivo</span>
+            <div><span id="wordCount">0 palabras</span><span class="meta-divider">·</span><span id="charCount">0 / 3.000</span><span class="sr-only" id="charStatus" aria-live="polite"></span></div>
+          </div>
+        </div>
+
+        <div class="accessibility-note" id="accessibilityNote" aria-live="polite" hidden><span aria-hidden="true">◉</span><p><strong>Hay bastante texto con formato.</strong> Los lectores de pantalla pueden interpretarlo mal. Úsalo solo para destacar frases cortas.</p></div>
+
+        <div class="copy-zone editor-copy-zone">
+          <button class="copy-button" id="copyButton" type="button"><span id="copyLabel">Copiar para LinkedIn</span><span aria-hidden="true">↗</span></button>
+          <p>Copia el texto completo, tal como lo ves en el editor.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="good-to-know">
+      <span class="good-icon" aria-hidden="true">i</span>
+      <div><strong>El formato es visual, no real.</strong><p>LinkedIn recibirá caracteres Unicode que parecen negrita o cursiva. Evita aplicarlos a hashtags, enlaces o párrafos completos.</p></div>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script src="./app.js"></script>
+</body>
+</html>

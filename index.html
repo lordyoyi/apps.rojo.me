@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fffaf5">
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <title>Apps · Rodrigo Rojo</title>
+  <meta name="description" content="Herramientas pequeñas y útiles de Rodrigo Rojo.">
+  <style>
+    :root{--ink:#171514;--muted:#6c6762;--line:#e8e0d9;--paper:#fffaf5;--card:#fff;--red:#e5392d;--red-dark:#b9211a}
+    *{box-sizing:border-box}html{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--paper);color:var(--ink)}body{margin:0;min-height:100vh;background:radial-gradient(circle at 85% 0%,rgba(229,57,45,.12),transparent 28rem),var(--paper)}
+    header,main,footer{width:min(1120px,calc(100% - 40px));margin:auto}header{height:76px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line)}.brand{display:flex;align-items:center;gap:11px;font-weight:750;letter-spacing:-.03em}.mark{width:30px;height:30px;border-radius:9px;background:var(--red);color:white;display:grid;place-items:center;font-weight:850}.domain{color:var(--muted);font-size:14px}.domain strong{color:var(--ink)}
+    main{padding:88px 0 120px}.eyebrow{font-size:12px;text-transform:uppercase;letter-spacing:.14em;font-weight:750;color:var(--red)}h1{font-size:clamp(44px,7vw,78px);line-height:.98;letter-spacing:-.065em;max-width:780px;margin:18px 0 24px}.lead{font-size:clamp(18px,2vw,22px);line-height:1.55;color:var(--muted);max-width:670px;margin:0}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:72px}.app{position:relative;min-height:260px;padding:26px;background:rgba(255,255,255,.88);border:1px solid var(--line);border-radius:22px;text-decoration:none;color:inherit;display:flex;flex-direction:column;box-shadow:0 20px 50px rgba(52,33,22,.05);transition:.2s ease}.app:hover{transform:translateY(-4px);border-color:#d9cbc0;box-shadow:0 24px 70px rgba(52,33,22,.10)}.app-icon{width:52px;height:52px;border-radius:15px;background:#fff0ed;color:var(--red);display:grid;place-items:center;font-size:24px}.app h2{font-size:24px;letter-spacing:-.04em;margin:38px 0 10px}.app p{margin:0;color:var(--muted);line-height:1.5}.open{margin-top:auto;padding-top:26px;font-size:14px;font-weight:700;color:var(--red)}.soon{opacity:.56;pointer-events:none}.soon .app-icon{background:#f3eee9;color:#8b827a}.soon .open{color:#8b827a}
+    footer{padding:28px 0 42px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+    @media(max-width:780px){header{height:66px}main{padding:60px 0 88px}.grid{grid-template-columns:1fr;margin-top:48px}.app{min-height:220px}h1{font-size:48px}}
+  </style>
+</head>
+<body>
+  <header><div class="brand"><span class="mark">R</span><span>rojo. apps</span></div><div class="domain"><strong>apps</strong>.rojo.me</div></header>
+  <main>
+    <div class="eyebrow">Herramientas pequeñas. Problemas resueltos.</div>
+    <h1>Las aplicaciones que quiero tener siempre a mano.</h1>
+    <p class="lead">Utilidades simples, rápidas y sin vueltas. Hechas para resolver tareas cotidianas desde cualquier dispositivo.</p>
+    <section class="grid" aria-label="Aplicaciones disponibles">
+      <a class="app" href="./formato-linkedin/">
+        <span class="app-icon" aria-hidden="true">in</span>
+        <h2>Formato para LinkedIn</h2>
+        <p>Da estructura y énfasis a tus publicaciones antes de copiarlas a LinkedIn.</p>
+        <span class="open">Abrir aplicación →</span>
+      </a>
+      <article class="app soon" aria-label="Próxima aplicación">
+        <span class="app-icon" aria-hidden="true">＋</span>
+        <h2>La próxima utilidad</h2>
+        <p>Este espacio está listo para la siguiente herramienta que necesitemos.</p>
+        <span class="open">Próximamente</span>
+      </article>
+    </section>
+  </main>
+  <footer>Rodrigo Rojo · Herramientas útiles para personas reales.</footer>
+</body>
+</html>
