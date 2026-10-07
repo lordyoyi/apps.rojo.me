@@ -3,12 +3,14 @@
 El sitio ya está listo en GitHub Pages: el repo tiene Pages activado y el archivo `CNAME` con `apps.rojo.me`.
 Solo falta que el DNS de rojo.me (GoDaddy) apunte el subdominio a GitHub. Son unos 10 minutos de trabajo más la espera del certificado.
 
-| Qué | Dónde | Estado (7 oct 2026) |
+| Qué | Dónde | Estado |
 |---|---|---|
-| GitHub Pages activado | Repo › Settings › Pages | ✅ (lordyoyi.github.io/apps.rojo.me ya redirige a apps.rojo.me) |
-| Registro DNS `apps` | GoDaddy | ❌ falta |
-| Dominio verificado en GitHub | Tu perfil › Settings › Pages | ❓ revisar |
-| HTTPS obligatorio | Repo › Settings › Pages | ❌ después del DNS |
+| GitHub Pages activado | Repo › Settings › Pages | ✅ |
+| Registro DNS `apps` (CNAME → lordyoyi.github.io) | GoDaddy | ✅ 7 oct 2026 |
+| rojo.me verificado en GitHub (TXT `_github-pages-challenge-lordyoyi`) | Tu perfil › Settings › Pages | ✅ 7 oct 2026 |
+| HTTPS obligatorio | Repo › Settings › Pages | ✅ 7 oct 2026 |
+
+**Publicado el 7 oct 2026.** Lo que sigue queda como referencia por si hay que rehacerlo.
 
 ## 1 · Verifica rojo.me en GitHub (recomendado, 5 min)
 
