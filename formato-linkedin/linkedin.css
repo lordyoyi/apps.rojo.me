@@ -1,0 +1,25 @@
+/* Formato para LinkedIn · tono calma */
+.li-barra { position: relative; }
+.li-barra__der { margin-left: auto; display: inline-flex; gap: 6px; }
+.li-pop { position: relative; }
+.li-pop .ap-popover { left: 0; top: 100%; }
+.li-editor { min-height: 420px; }
+
+/* Vista previa: imita la tarjeta de un post, sin logos ni colores de LinkedIn */
+.li-post { background: #fff; color: rgba(0, 0, 0, .9); border-radius: 12px; box-shadow: 0 0 0 1px rgba(0, 0, 0, .08), 0 16px 32px -20px rgba(0, 0, 0, .5); font: 400 14px/1.43 -apple-system, system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; overflow: hidden; margin-inline: auto; width: 100%; transition: max-width var(--dur-base) var(--ob-ease); }
+.li-post[data-pantalla="movil"] { max-width: 390px; }
+.li-post[data-pantalla="escritorio"] { max-width: 555px; }
+.li-post__autor { display: flex; gap: 10px; padding: 14px 16px 8px; }
+.li-post__foto { width: 48px; height: 48px; border-radius: 50%; flex: none; background: radial-gradient(circle at 50% 38%, #f2eadb 0 22%, transparent 23%), radial-gradient(ellipse 60% 40% at 50% 100%, #f2eadb 0 60%, transparent 61%), linear-gradient(135deg, #1f7a72, #1fe6c4); }
+.li-post__autor b { display: block; font-size: 14px; }
+.li-post__autor small { display: block; font-size: 12px; color: rgba(0, 0, 0, .6); line-height: 1.35; }
+.li-post__texto { padding: 4px 16px 12px; white-space: pre-wrap; overflow-wrap: anywhere; min-height: 60px; }
+.li-post__texto:empty::before { content: "Tu post aparece aquí mientras escribes."; color: rgba(0, 0, 0, .45); }
+.li-post__mas { border: 0; background: none; padding: 0; font: inherit; color: rgba(0, 0, 0, .6); cursor: pointer; }
+.li-post__mas:hover { color: #0a66c2; text-decoration: underline; }
+.li-post__acciones { display: flex; justify-content: space-around; gap: 4px; padding: 8px; border-top: 1px solid rgba(0, 0, 0, .08); font-size: 13px; font-weight: 600; color: rgba(0, 0, 0, .6); }
+
+.li-gancho { padding: 16px 18px; border-radius: var(--radius-sm); background: var(--ap-calma-fondo); }
+.li-gancho p { margin: 0; line-height: 1.5; color: var(--texto-2); overflow-wrap: anywhere; }
+.li-gancho .li-gancho__t { margin-bottom: 4px; font-weight: 800; color: var(--texto); }
+.li-gancho strong { color: var(--texto); }

@@ -1,325 +1,152 @@
-(() => {
-  const editor = document.querySelector('#postEditor');
-  const charCount = document.querySelector('#charCount');
-  const charStatus = document.querySelector('#charStatus');
-  const wordCount = document.querySelector('#wordCount');
-  const saveStatus = document.querySelector('#saveStatus');
-  const accessibilityNote = document.querySelector('#accessibilityNote');
-  const copyButton = document.querySelector('#copyButton');
-  const copyLabel = document.querySelector('#copyLabel');
-  const toast = document.querySelector('#toast');
-  const symbolsPopover = document.querySelector('#symbolsPopover');
-  const symbolsButton = document.querySelector('#symbolsButton');
-  const moreButton = document.querySelector('#moreButton');
-  const morePopover = document.querySelector('#morePopover');
-  const symbolGrid = document.querySelector('#symbolGrid');
-  const undoButton = document.querySelector('#undoButton');
-  const redoButton = document.querySelector('#redoButton');
+/* Formato para LinkedIn: negrita y cursiva con letras Unicode, listas, historial y vista previa del feed. */
+(function () {
+  var $ = function (s) { return document.querySelector(s); };
+  var U = Apps.unicode;
+  var editor = $('#editor'), postTexto = $('#post-texto'), post = $('#post');
+  var CLAVE = 'rojo-apps-linkedin-draft-v1', LIMITE = 3000;
+  var CORTE = { movil: 140, escritorio: 210 }, pantalla = Apps.leer('rojo-apps-linkedin-pantalla', 'movil'), abierto = false;
+  var SIMBOLOS = ['→', '↳', '✓', '✗', '•', '◦', '★', '✦', '①', '②', '③', '④', '⑤', '«', '»', '¿', '💡', '🚀', '🔥', '✨', '🎯', '💥', '🤯', '👇', '📌', '✅', '❌', '⚠️', '🧠', '🤖', '♻️', '🔴'];
+  var EJEMPLO = 'Probé 3 formas de escribir el gancho de un post.\nLa tercera duplicó los comentarios.\n\nTodas decían lo mismo. Lo único que cambió fue la primera línea:\n\n1. Una pregunta: «¿Usas IA en tu trabajo?»\n2. Un dato: «El 70 % no pasa de la primera línea.»\n3. Una historia: «Ayer mi jefa me pidió algo imposible.»\n\nGanó la historia, lejos.\n\n→ La gente sigue leyendo cuando quiere saber qué pasó.\n→ Las preguntas se responden con un «sí» y se olvidan.\n\nTu turno: ¿cuál habrías elegido?\n\n#LinkedIn #Escritura';
 
-  const STORAGE_KEY = 'rojo-apps-linkedin-draft-v1';
-  const THEME_KEY = 'rojo-apps-theme';
-  const LIMIT = 3000;
-  const symbols = ['→','←','↳','•','◦','▪','✓','✗','★','☆','✦','✱','◆','◇','—','“','”','¿','?','¡','!','✅','💡','⚠️','👇','📌','🔴','🟢','🧠','🤖','🚀','❤️'];
+  // Historial propio: setRangeText no entra al deshacer del navegador
+  var historia = [''], pos = 0, espera = null;
+  function apilar() { var v = editor.value; if (historia[pos] === v) return; historia = historia.slice(0, pos + 1); historia.push(v); if (historia.length > 100) historia.shift(); pos = historia.length - 1; botonesHistoria(); }
+  function asentar() { if (espera) { clearTimeout(espera); espera = null; apilar(); } }
+  function ir(i) { asentar(); if (i < 0 || i >= historia.length) return; pos = i; editor.value = historia[pos]; todo(); botonesHistoria(); editor.focus(); }
+  function botonesHistoria() { $('#deshacer').disabled = pos <= 0; $('#rehacer').disabled = pos >= historia.length - 1; }
 
-  const styles = {
-    bold: { upper: 0x1d400, lower: 0x1d41a, digit: 0x1d7ce },
-    italic: { upper: 0x1d434, lower: 0x1d44e },
-    boldItalic: { upper: 0x1d468, lower: 0x1d482 }
-  };
-  const maps = {};
-  const reverse = new Map();
-  const styleOf = new Map();
-  function safeGet(key) {
-    try { return localStorage.getItem(key); }
-    catch (_) { return null; }
+  function reemplazar(transformar) {
+    var a = editor.selectionStart, b = editor.selectionEnd;
+    if (a === b) { Apps.avisar('Primero selecciona el texto que quieres cambiar.'); editor.focus(); return; }
+    asentar(); editor.setRangeText(transformar(editor.value.slice(a, b)), a, b, 'select'); apilar(); todo(); editor.focus();
   }
 
-  function safeSet(key, value) {
-    try { localStorage.setItem(key, value); return true; }
-    catch (_) { return false; }
-  }
-
-  function buildMaps() {
-    for (const [name, bases] of Object.entries(styles)) {
-      const map = new Map();
-      for (let i = 0; i < 26; i++) {
-        const upper = String.fromCharCode(65 + i);
-        const lower = String.fromCharCode(97 + i);
-        const styledUpper = String.fromCodePoint(bases.upper + i);
-        let styledLower = String.fromCodePoint(bases.lower + i);
-        if (name === 'italic' && lower === 'h') styledLower = 'ℎ';
-        map.set(upper, styledUpper); map.set(lower, styledLower);
-        reverse.set(styledUpper, upper); reverse.set(styledLower, lower);
-        styleOf.set(styledUpper, name); styleOf.set(styledLower, name);
+  function formato(estilo) {
+    reemplazar(function (t) {
+      if (estilo === 'subrayado' || estilo === 'tachado') {
+        var marca = estilo === 'subrayado' ? '̲' : '̶';
+        var gs = U.grafemas(t).filter(function (g) { return !/^\s+$/.test(g); });
+        return gs.length && gs.every(function (g) { return g.indexOf(marca) > -1; }) ? t.split(marca).join('') : U.conMarca(t, marca);
       }
-      if (bases.digit) {
-        for (let i = 0; i < 10; i++) {
-          const plain = String(i), styled = String.fromCodePoint(bases.digit + i);
-          map.set(plain, styled); reverse.set(styled, plain); styleOf.set(styled, name);
-        }
-      }
-      maps[name] = map;
-    }
-  }
-  buildMaps();
-
-  function graphemes(text) {
-    if (window.Intl && Intl.Segmenter) {
-      return [...new Intl.Segmenter('es', { granularity: 'grapheme' }).segment(text)].map(x => x.segment);
-    }
-    return Array.from(text);
-  }
-
-  function unstyleMath(text) {
-    return Array.from(text).map(char => reverse.get(char) || char).join('');
-  }
-
-  function toPlain(text) {
-    return unstyleMath(text).replace(/[\u0332\u0336]/g, '').normalize('NFC');
-  }
-
-  function applyUnicodeStyle(text, style) {
-    const map = maps[style];
-    return graphemes(text).map(cluster => {
-      const decomposed = cluster.normalize('NFD');
-      const chars = Array.from(decomposed);
-      const first = chars.shift();
-      return (map.get(first) || first) + chars.join('');
-    }).join('');
-  }
-
-  function applyLineStyle(text, mark) {
-    return graphemes(text).map(cluster => /^\s+$/.test(cluster) || cluster.includes(mark) ? cluster : cluster + mark).join('');
-  }
-
-  function selectionIsStyle(text, style) {
-    const eligible = graphemes(text).map(cluster => Array.from(cluster.normalize('NFD'))[0]).filter(char => maps[style].has(reverse.get(char) || char));
-    return eligible.length > 0 && eligible.every(char => styleOf.get(char) === style);
-  }
-
-  function replaceSelection(transform) {
-    const start = editor.selectionStart;
-    const end = editor.selectionEnd;
-    if (start === end) { showToast('Selecciona primero el texto que quieres modificar.'); editor.focus(); return; }
-    commitPendingHistory();
-    const selected = editor.value.slice(start, end);
-    const replacement = transform(selected);
-    editor.setRangeText(replacement, start, end, 'select');
-    pushHistory();
-    updateAll();
-    editor.focus();
-  }
-
-  function formatSelection(style) {
-    replaceSelection(selected => {
-      if (style === 'underline') {
-        const clusters = graphemes(selected).filter(cluster => !/^\s+$/.test(cluster));
-        return clusters.length && clusters.every(cluster => cluster.includes('\u0332')) ? selected.replace(/\u0332/g, '') : applyLineStyle(selected, '\u0332');
-      }
-      if (style === 'strike') {
-        const clusters = graphemes(selected).filter(cluster => !/^\s+$/.test(cluster));
-        return clusters.length && clusters.every(cluster => cluster.includes('\u0336')) ? selected.replace(/\u0336/g, '') : applyLineStyle(selected, '\u0336');
-      }
-      const shouldRemove = selectionIsStyle(selected, style);
-      const plain = unstyleMath(selected);
-      return shouldRemove ? plain : applyUnicodeStyle(plain, style);
+      return U.esEstilo(t, estilo) ? U.sinEstilo(t).normalize('NFC') : U.conEstilo(t, estilo);
     });
   }
 
-  function formatList(type) {
-    commitPendingHistory();
-    const start = editor.selectionStart;
-    const end = editor.selectionEnd;
-    const lineStart = editor.value.lastIndexOf('\n', start - 1) + 1;
-    const nextBreak = editor.value.indexOf('\n', end);
-    const lineEnd = nextBreak === -1 ? editor.value.length : nextBreak;
-    const block = editor.value.slice(lineStart, lineEnd);
-    const lines = block.split('\n');
-    const contentLines = lines.filter(line => line.trim());
-    const sameMarker = contentLines.length > 0 && contentLines.every(line => type === 'bullet' ? /^\s*•\s+/.test(line) : /^\s*\d+[.)]\s+/.test(line));
-    let number = 0;
-    const replacement = lines.map(line => {
-      if (!line.trim()) return line;
-      const clean = line.replace(/^\s*(?:•|\d+[.)])\s+/, '');
-      if (sameMarker) return clean;
-      if (type === 'bullet') return `• ${clean}`;
-      number += 1;
-      return `${number}. ${clean}`;
+  function lista(tipo) {
+    asentar();
+    var v = editor.value, a = editor.selectionStart, b = editor.selectionEnd;
+    var ini = v.lastIndexOf('\n', a - 1) + 1, fin = v.indexOf('\n', b); if (fin < 0) fin = v.length;
+    var lineas = v.slice(ini, fin).split('\n'), llenas = lineas.filter(function (l) { return l.trim(); });
+    var patron = tipo === 'flecha' ? /^\s*→\s+/ : /^\s*\d+[.)]\s+/;
+    var quitar = llenas.length && llenas.every(function (l) { return patron.test(l); }), n = 0;
+    var nuevo = lineas.map(function (l) {
+      if (!l.trim()) return l;
+      var limpia = l.replace(/^\s*(?:→|•|\d+[.)])\s+/, '');
+      if (quitar) return limpia;
+      return tipo === 'flecha' ? '→ ' + limpia : (++n) + '. ' + limpia;
     }).join('\n');
-    editor.setRangeText(replacement, lineStart, lineEnd, 'select');
-    pushHistory(); updateAll(); editor.focus();
+    editor.setRangeText(nuevo, ini, fin, 'select'); apilar(); todo(); editor.focus();
   }
 
-  function insertAtCursor(text) {
-    commitPendingHistory();
-    const start = editor.selectionStart, end = editor.selectionEnd;
-    editor.setRangeText(text, start, end, 'end');
-    pushHistory(); updateAll(); editor.focus();
-  }
+  function insertar(t) { asentar(); editor.setRangeText(t, editor.selectionStart, editor.selectionEnd, 'end'); apilar(); todo(); editor.focus(); }
 
-  let history = [''];
-  let historyIndex = 0;
-  let inputTimer;
-  let toastTimer;
-
-  function commitPendingHistory() {
-    if (!inputTimer) return;
-    clearTimeout(inputTimer);
-    inputTimer = null;
-    pushHistory();
-  }
-
-  function pushHistory() {
-    const value = editor.value;
-    if (history[historyIndex] === value) return;
-    history = history.slice(0, historyIndex + 1);
-    history.push(value);
-    if (history.length > 80) history.shift();
-    historyIndex = history.length - 1;
-    updateHistoryButtons();
-  }
-
-  function restoreHistory(index) {
-    if (index < 0 || index >= history.length) return;
-    historyIndex = index;
-    editor.value = history[historyIndex];
-    updateAll(); updateHistoryButtons(); editor.focus();
-  }
-
-  function updateHistoryButtons() {
-    undoButton.disabled = historyIndex <= 0;
-    redoButton.disabled = historyIndex >= history.length - 1;
-    undoButton.style.opacity = undoButton.disabled ? '.35' : '1';
-    redoButton.style.opacity = redoButton.disabled ? '.35' : '1';
-  }
-
-  function countWords(text) {
-    const words = toPlain(text).trim().match(/[\p{L}\p{N}\p{M}]+(?:['’][\p{L}\p{N}\p{M}]+)*/gu);
-    return words ? words.length : 0;
-  }
-
-  function styledCharacterCount(text) {
-    return Array.from(text).filter(char => styleOf.has(char) || char === '\u0332' || char === '\u0336').length;
-  }
-
-  function updateAll() {
-    const value = editor.value;
-    const chars = value.length;
-    const words = countWords(value);
-    charCount.textContent = `${chars.toLocaleString('es-CL')} / 3.000`;
-    wordCount.textContent = `${words.toLocaleString('es-CL')} ${words === 1 ? 'palabra' : 'palabras'}`;
-    charCount.className = chars > LIMIT ? 'over' : chars > 2700 ? 'warning' : '';
-    charStatus.textContent = chars > LIMIT ? `El texto excede el límite por ${(chars - LIMIT).toLocaleString('es-CL')} caracteres.` : '';
-    const styled = styledCharacterCount(value);
-    accessibilityNote.hidden = styled < 35 || styled / Math.max(Array.from(value).length, 1) < .18;
-    const saved = safeSet(STORAGE_KEY, value);
-    saveStatus.textContent = saved ? 'Guardado en este dispositivo' : 'Borrador activo, pero no se pudo guardar';
-  }
-
-  function showToast(message) {
-    toast.textContent = message;
-    toast.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove('show'), 2300);
-  }
-
-  async function copyPost() {
-    if (!editor.value.trim()) { showToast('Primero escribe algo para copiar.'); editor.focus(); return; }
-    let copied = false;
-    try {
-      await navigator.clipboard.writeText(editor.value);
-      copied = true;
-    } catch (_) {
-      const start = editor.selectionStart, end = editor.selectionEnd;
-      editor.select();
-      try { copied = document.execCommand('copy'); }
-      catch (_) { copied = false; }
-      editor.setSelectionRange(start, end);
+  // Dónde corta LinkedIn: 3 líneas o el límite de caracteres de la pantalla, lo que llegue primero (aproximado)
+  function corte(texto) {
+    var cs = Array.from(texto), limite = CORTE[pantalla], saltos = 0;
+    for (var i = 0; i < cs.length; i++) {
+      if (cs[i] === '\n' && ++saltos === 3) { limite = Math.min(limite, i); break; }
     }
-    if (!copied) { showToast('No pude copiar. Selecciona el texto y usa Copiar.'); editor.focus(); return; }
-    copyLabel.textContent = 'Copiado';
-    copyButton.style.background = '#1b8d62';
-    const overBy = editor.value.length - LIMIT;
-    showToast(overBy > 0 ? `Copiado, pero excede el límite por ${overBy.toLocaleString('es-CL')} caracteres.` : 'Copiado. Ya puedes pegarlo en LinkedIn.');
-    setTimeout(() => { copyLabel.textContent = 'Copiar para LinkedIn'; copyButton.style.background = ''; }, 1800);
+    if (cs.length <= limite) return -1;
+    var pre = cs.slice(0, limite).join(''), esp = pre.search(/\s\S*$/);
+    return esp > limite * 0.6 ? esp : pre.length;
   }
 
-  document.querySelectorAll('.format-tool').forEach(button => button.addEventListener('click', () => formatSelection(button.dataset.format)));
-  document.querySelectorAll('.list-tool').forEach(button => button.addEventListener('click', () => formatList(button.dataset.list)));
-  document.querySelector('#removeFormat').addEventListener('click', () => replaceSelection(toPlain));
-  document.querySelectorAll('.toolbar button').forEach(button => button.addEventListener('pointerdown', event => event.preventDefault()));
-  function closeMore() { morePopover.classList.remove('open'); moreButton.setAttribute('aria-expanded', 'false'); }
-  moreButton.addEventListener('click', event => {
-    event.stopPropagation();
-    const willOpen = !morePopover.classList.contains('open');
-    closeSymbols();
-    morePopover.classList.toggle('open', willOpen);
-    moreButton.setAttribute('aria-expanded', String(willOpen));
-  });
-  symbolsButton.addEventListener('click', event => {
-    event.stopPropagation();
-    closeMore();
-    symbolsPopover.hidden = !symbolsPopover.hidden;
-    symbolsButton.setAttribute('aria-expanded', String(!symbolsPopover.hidden));
-  });
-  symbols.forEach(symbol => {
-    const button = document.createElement('button'); button.type = 'button'; button.textContent = symbol; button.title = `Insertar ${symbol}`;
-    button.addEventListener('pointerdown', event => event.preventDefault());
-    button.addEventListener('click', () => { insertAtCursor(symbol); symbolsPopover.hidden = true; symbolsButton.setAttribute('aria-expanded', 'false'); }); symbolGrid.append(button);
-  });
-  function closeSymbols() { symbolsPopover.hidden = true; symbolsButton.setAttribute('aria-expanded', 'false'); }
-  morePopover.addEventListener('click', event => { if (event.target.closest('button') && event.target.id !== 'symbolsButton') closeMore(); });
-  document.querySelector('#menuClearAll').addEventListener('click', () => document.querySelector('#clearAll').click());
-  document.addEventListener('click', event => {
-    if (!symbolsPopover.contains(event.target) && event.target.id !== 'symbolsButton') closeSymbols();
-    if (!morePopover.contains(event.target) && event.target.id !== 'moreButton') closeMore();
-  });
-  document.addEventListener('keydown', event => {
-    if (event.key !== 'Escape') return;
-    if (!symbolsPopover.hidden) { closeSymbols(); symbolsButton.focus(); }
-    else if (morePopover.classList.contains('open')) { closeMore(); moreButton.focus(); }
-  });
-
-  editor.addEventListener('input', () => {
-    if (historyIndex < history.length - 1) { history = history.slice(0, historyIndex + 1); updateHistoryButtons(); }
-    updateAll();
-    clearTimeout(inputTimer); inputTimer = setTimeout(() => { inputTimer = null; pushHistory(); }, 400);
-  });
-  editor.addEventListener('keydown', event => {
-    const mod = event.ctrlKey || event.metaKey;
-    if (!mod) return;
-    const key = event.key.toLowerCase();
-    if (key === 'b') { event.preventDefault(); formatSelection('bold'); }
-    if (key === 'i') { event.preventDefault(); formatSelection('italic'); }
-    if (key === 'z' && !event.shiftKey) { event.preventDefault(); commitPendingHistory(); restoreHistory(historyIndex - 1); }
-    if (key === 'y' || (key === 'z' && event.shiftKey)) { event.preventDefault(); commitPendingHistory(); restoreHistory(historyIndex + 1); }
-  });
-
-  undoButton.addEventListener('click', () => { commitPendingHistory(); restoreHistory(historyIndex - 1); });
-  redoButton.addEventListener('click', () => { commitPendingHistory(); restoreHistory(historyIndex + 1); });
-  document.querySelector('#clearAll').addEventListener('click', () => {
-    if (!editor.value || window.confirm('¿Quieres borrar todo el texto?')) {
-      commitPendingHistory();
-      editor.value = '';
-      pushHistory();
-      updateAll();
-      editor.focus();
+  function vista() {
+    var t = editor.value.replace(/\s+$/, ''), c = corte(t);
+    postTexto.textContent = '';
+    if (c < 0 || abierto) { postTexto.textContent = t; }
+    else {
+      postTexto.textContent = t.slice(0, c).replace(/[\s.…]+$/, '') + '… ';
+      var mas = document.createElement('button'); mas.type = 'button'; mas.className = 'li-post__mas'; mas.textContent = 'más';
+      mas.addEventListener('click', function () { abierto = true; vista(); });
+      postTexto.appendChild(mas);
     }
-  });
-  copyButton.addEventListener('click', copyPost);
-
-  const themeButton = document.querySelector('#themeButton');
-  function setTheme(theme) {
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-    safeSet(THEME_KEY, theme);
-    themeButton.textContent = theme === 'dark' ? '☀' : '◐';
+    var g = $('#gancho-texto');
+    if (!t) { g.textContent = 'Lo que la gente lee antes de «…más». Ahí decide si sigue leyendo.'; return; }
+    if (c < 0) { g.innerHTML = '<strong>Se lee completo, sin «…más».</strong> Los posts cortos funcionan bien cuando la idea es una sola.'; return; }
+    var gancho = t.slice(0, c).replace(/\s+$/, '');
+    g.textContent = ''; var s = document.createElement('strong'); s.textContent = Array.from(U.aPlano(gancho)).length + ' caracteres antes del corte. ';
+    g.append(s, '¿Dan ganas de tocar «más»? Si empieza con un saludo o con tu nombre, prueba partir con el resultado.');
   }
-  themeButton.addEventListener('click', () => setTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark'));
 
-  const saved = safeGet(STORAGE_KEY) || '';
-  editor.value = saved;
-  editor.setSelectionRange(saved.length, saved.length);
-  history = [saved]; historyIndex = 0;
-  setTheme(safeGet(THEME_KEY) || 'light');
-  updateAll(); updateHistoryButtons();
+  function todo() {
+    var v = editor.value, n = v.length, palabras = (U.aPlano(v).match(/[\p{L}\p{N}]+(?:['’][\p{L}\p{N}]+)*/gu) || []).length;
+    $('#palabras').textContent = palabras.toLocaleString('es-CL') + (palabras === 1 ? ' palabra' : ' palabras');
+    var c = $('#caracteres'); c.textContent = n.toLocaleString('es-CL') + ' / 3.000';
+    c.setAttribute('data-estado', n > LIMITE ? 'error' : n > 2700 ? 'alerta' : '');
+    if (n > LIMITE) c.textContent += ' · sobran ' + (n - LIMITE).toLocaleString('es-CL');
+    var conFormato = U.cuentaConEstilo(v);
+    $('#aviso-formato').hidden = conFormato < 35 || conFormato / Math.max(Array.from(v).length, 1) < 0.18;
+    $('#guardado').textContent = Apps.guardar(CLAVE, v) ? 'Se guarda en este navegador' : 'No se pudo guardar: copia tu texto antes de cerrar';
+    vista();
+  }
+
+  // Eventos
+  document.querySelectorAll('[data-formato]').forEach(function (b) { b.addEventListener('click', function () { formato(b.dataset.formato); }); });
+  document.querySelectorAll('[data-lista]').forEach(function (b) { b.addEventListener('click', function () { lista(b.dataset.lista); }); });
+  document.querySelectorAll('.li-barra button').forEach(function (b) { b.addEventListener('pointerdown', function (e) { e.preventDefault(); }); });
+  $('#quitar').addEventListener('click', function () { reemplazar(U.aPlano); });
+  $('#deshacer').addEventListener('click', function () { ir(pos - 1); });
+  $('#rehacer').addEventListener('click', function () { ir(pos + 1); });
+
+  var pop = $('#simbolos-pop'), btnSim = $('#simbolos');
+  function cerrarPop() { pop.hidden = true; btnSim.setAttribute('aria-expanded', 'false'); }
+  SIMBOLOS.forEach(function (s) {
+    var b = document.createElement('button'); b.type = 'button'; b.textContent = s; b.setAttribute('aria-label', 'Insertar ' + s);
+    b.addEventListener('pointerdown', function (e) { e.preventDefault(); });
+    b.addEventListener('click', function () { insertar(s); cerrarPop(); });
+    $('#simbolos-grilla').appendChild(b);
+  });
+  btnSim.addEventListener('click', function (e) { e.stopPropagation(); pop.hidden = !pop.hidden; btnSim.setAttribute('aria-expanded', String(!pop.hidden)); });
+  document.addEventListener('click', function (e) { if (!pop.contains(e.target)) cerrarPop(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !pop.hidden) { cerrarPop(); btnSim.focus(); } });
+
+  editor.addEventListener('input', function () {
+    if (pos < historia.length - 1) { historia = historia.slice(0, pos + 1); botonesHistoria(); }
+    abierto = false; todo(); clearTimeout(espera); espera = setTimeout(function () { espera = null; apilar(); }, 400);
+  });
+  editor.addEventListener('keydown', function (e) {
+    if (!(e.ctrlKey || e.metaKey)) return;
+    var k = e.key.toLowerCase();
+    if (k === 'b') { e.preventDefault(); formato('negrita'); }
+    else if (k === 'i') { e.preventDefault(); formato('cursiva'); }
+    else if (k === 'z' && !e.shiftKey) { e.preventDefault(); ir(pos - 1); }
+    else if (k === 'y' || (k === 'z' && e.shiftKey)) { e.preventDefault(); ir(pos + 1); }
+  });
+
+  $('#ejemplo').addEventListener('click', function () {
+    asentar(); editor.value = U.conEstilo('Probé 3 formas de escribir el gancho de un post.', 'negrita') + EJEMPLO.slice(EJEMPLO.indexOf('\n'));
+    apilar(); abierto = false; todo(); editor.focus(); editor.setSelectionRange(0, 0); editor.scrollTop = 0;
+  });
+  $('#limpiar').addEventListener('click', function () {
+    if (editor.value && !confirm('¿Borrar todo el texto? Puedes recuperarlo con Deshacer.')) return;
+    asentar(); editor.value = ''; apilar(); todo(); editor.focus();
+  });
+
+  var marcarPantalla = Apps.segmentado($('#pantalla'), function (v) { pantalla = v; post.dataset.pantalla = v; Apps.guardar('rojo-apps-linkedin-pantalla', v); abierto = false; vista(); });
+  marcarPantalla(pantalla); post.dataset.pantalla = pantalla;
+
+  $('#copiar').addEventListener('click', function () {
+    if (!editor.value.trim()) { Apps.avisar('Primero escribe algo para copiar.'); editor.focus(); return; }
+    Apps.copiar(editor.value).then(function (ok) {
+      if (!ok) { Apps.avisar('No pude copiar. Selecciona el texto y usa Copiar.'); return; }
+      var sobra = editor.value.length - LIMITE;
+      Apps.avisar(sobra > 0 ? 'Copiado, pero LinkedIn acepta 3.000 caracteres: te sobran ' + sobra.toLocaleString('es-CL') + '.' : 'Copiado. Pégalo en LinkedIn y publica.');
+      $('#copiar-txt').textContent = '¡Copiado!'; setTimeout(function () { $('#copiar-txt').textContent = 'Copiar para LinkedIn'; }, 1800);
+    });
+  });
+
+  var guardado = Apps.leer(CLAVE, '');
+  editor.value = guardado; historia = [guardado]; pos = 0;
+  botonesHistoria(); todo();
 })();

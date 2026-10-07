@@ -1,0 +1,27 @@
+/* Carrusel en PDF · tono amancay */
+.ca-taller { grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); }
+.ca-texto { min-height: 360px; font-size: 16px; }
+.ca-guia { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 12px 14px; border-radius: var(--radius-sm); background: var(--ap-amancay-fondo); font-size: 14px; color: var(--texto); }
+.ca-guia code { font: 600 13px var(--font-mono); padding: 2px 6px; border-radius: 6px; background: color-mix(in srgb, var(--fondo) 55%, transparent); }
+.ca-ajustes { display: grid; gap: 14px; }
+.ca-colores button { width: 44px; padding: 0; justify-content: center; }
+.ca-colores i { width: 22px; height: 22px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .25); }
+.ca-colores button[aria-pressed="true"] { background: var(--superficie-2); box-shadow: inset 0 0 0 2px var(--texto); }
+.ca-foto { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.ca-foto__vista { width: 48px; height: 48px; border-radius: 50%; background: var(--fondo-2) center / cover; box-shadow: inset 0 0 0 1px var(--linea); flex: none; }
+.ca-foto label.ob-btn { cursor: pointer; }
+.ca-foto input[type="file"]:focus-visible + * { outline: 2px solid var(--foco); }
+.ca-foto .ap-check { margin-left: auto; }
+
+.ca-nav { display: inline-flex; align-items: center; gap: 6px; font: 600 14px var(--font-mono); color: var(--texto-2); }
+.ca-nav .ap-herr { background: var(--fondo-2); }
+.ca-tira { display: grid; grid-auto-flow: column; grid-auto-columns: 100%; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; overscroll-behavior-x: contain; border-radius: var(--radius-sm); scrollbar-width: none; }
+.ca-tira::-webkit-scrollbar { display: none; }
+.ca-tira:focus-visible { outline: 2px solid var(--foco); outline-offset: 3px; }
+.ca-tira canvas { width: 100%; height: auto; max-height: 68vh; object-fit: contain; scroll-snap-align: center; border-radius: 10px; background: var(--fondo-2); }
+.ca-ayuda { margin: 0; font-size: 14px; line-height: 1.5; color: var(--texto-2); }
+.ca-ayuda strong { color: var(--texto); }
+@media (max-width: 980px) { .ca-taller { grid-template-columns: 1fr; } .ca-vista { order: -1; } }
+.ca-ajustes { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); }
+.ca-ajustes .ap-campo:last-child { grid-column: 1 / -1; }
+.ap-campo .ap-seg { justify-self: start; }
