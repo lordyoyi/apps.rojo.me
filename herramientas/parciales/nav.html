@@ -1,12 +1,16 @@
 <header class="ob-nav">
     <div class="ob-contenedor ob-nav__fila">
-        <a class="ob-nav__marca ap-nav__marca" href="/" aria-label="Apps de Rodrigo Rojo, inicio">{{marca}}<span class="ap-nav__apps">Apps</span></a>
+        <div class="ap-nav__marcas">
+            <a class="ob-nav__marca" href="https://www.rojo.me" aria-label="Rodrigo Rojo, ir a rojo.me">{{marca}}</a>
+            <a class="ap-nav__apps" href="/"{{actual:inicio}}>Apps</a>
+        </div>
         <nav class="ob-nav__menu" id="menu-principal" aria-label="Principal">
             <ul>
-                <li><a href="/formato-linkedin/"{{actual:formato-linkedin}}>Formato LinkedIn</a></li>
-                <li><a href="/carrusel/"{{actual:carrusel}}>Carrusel</a></li>
-                <li><a href="/teleprompter/"{{actual:teleprompter}}>Teleprompter</a></li>
-                <li><a href="https://www.rojo.me">rojo.me</a></li>
+                <li><a href="https://www.rojo.me/articulos/">Artículos</a></li>
+                <li><a href="https://tienda.rojo.me">Cursos</a></li>
+                <li><a href="https://www.skool.com/rojo">Comunidad</a></li>
+                <li><a href="https://www.rojo.me/empresas/">Empresas</a></li>
+                <li><a href="https://www.rojo.me/sobre-mi/">Sobre mí</a></li>
             </ul>
             <a class="ob-btn" data-variante="vivo" data-tamano="sm" href="https://www.rojo.me/#/portal/signup"><span>Suscríbete</span><span class="ob-btn__flecha" aria-hidden="true">→</span></a>
         </nav>
@@ -16,4 +20,12 @@
         </div>
         <button class="ob-nav__abrir" type="button" aria-expanded="false" aria-controls="menu-principal" aria-label="Menú"><svg class="ob-icono" aria-hidden="true" focusable="false" style="width:24px;height:24px"><use href="/assets/orbita/img/iconos.svg#i-menu"></use></svg></button>
     </div>
+    <nav class="ap-subnav" aria-label="Apps">
+        <div class="ob-contenedor ap-subnav__fila">
+            <a href="/"{{actual:inicio}}>Todas las apps</a>
+            <a href="/formato-linkedin/"{{actual:formato-linkedin}}><i style="background:var(--ap-calma)"></i>Formato LinkedIn</a>
+            <a href="/carrusel/"{{actual:carrusel}}><i style="background:var(--amancay)"></i>Carrusel en PDF</a>
+            <a href="/teleprompter/"{{actual:teleprompter}}><i style="background:var(--quintral)"></i>Teleprompter</a>
+        </div>
+    </nav>
 </header>

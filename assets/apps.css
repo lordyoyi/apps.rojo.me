@@ -8,11 +8,19 @@ body { background: var(--fondo); color: var(--texto); font-family: var(--font-sa
 [hidden] { display: none !important; }
 .ap-sr { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
-/* Nav: la marca con el rótulo «Apps» */
-.ap-nav__marca { display: inline-flex; align-items: center; gap: 12px; }
-.ap-nav__apps { font: 600 12px/1 var(--font-mono); letter-spacing: .2em; text-transform: uppercase; color: var(--texto-2); padding-left: 12px; border-left: 1px solid var(--linea); }
-.ob-nav__menu a[aria-current="page"] { color: var(--texto); text-decoration: underline; text-decoration-color: var(--copihue); text-underline-offset: 6px; text-decoration-thickness: 2px; }
-@media (max-width: 420px) { .ap-nav__marca .ob-marca__nombre { display: none; } }
+/* Nav: la misma de rojo.me (el logo lleva a rojo.me) + el rótulo «Apps» y una barra con las apps */
+.ap-nav__marcas { display: inline-flex; align-items: center; gap: 12px; margin-right: auto; }
+.ap-nav__marcas .ob-nav__marca { margin-right: 0; }
+.ap-nav__apps { display: inline-flex; align-items: center; min-height: 32px; font: 600 12px/1 var(--font-mono); letter-spacing: .2em; text-transform: uppercase; color: var(--texto-2); text-decoration: none; padding-left: 12px; border-left: 1px solid var(--linea); }
+.ap-nav__apps:hover, .ap-nav__apps[aria-current="page"] { color: var(--texto); }
+.ap-subnav { border-top: 1px solid var(--linea); background: var(--fondo-2); }
+.ap-subnav__fila { display: flex; align-items: center; gap: 4px 24px; min-height: 44px; overflow-x: auto; scrollbar-width: none; white-space: nowrap; }
+.ap-subnav__fila::-webkit-scrollbar { display: none; }
+.ap-subnav a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 14px; font-weight: 600; color: var(--texto-2); text-decoration: none; border-bottom: 2px solid transparent; }
+.ap-subnav a:hover { color: var(--texto); }
+.ap-subnav a[aria-current="page"] { color: var(--texto); border-bottom-color: var(--copihue); }
+.ap-subnav i { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+@media (max-width: 420px) { .ap-nav__marcas .ob-marca__nombre { display: none; } }
 
 /* ───────── Portada ───────── */
 .ap-hero { position: relative; overflow: hidden; padding-block: clamp(40px, 7vw, 96px) clamp(40px, 6vw, 80px); }
@@ -141,7 +149,7 @@ body { background: var(--fondo); color: var(--texto); font-family: var(--font-sa
 .ap-panel { background: var(--superficie); border-radius: var(--radius-md); box-shadow: var(--sombra-orbita); padding: clamp(16px, 2vw, 24px); display: grid; gap: 16px; min-width: 0; }
 .ap-panel__cabeza { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .ap-panel__t { margin: 0; font-size: 18px; font-weight: 800; letter-spacing: -.02em; }
-.ap-pegajoso { position: sticky; top: 88px; }
+.ap-pegajoso { position: sticky; top: 136px; }
 
 .ap-barra { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 6px; border-radius: 12px; background: var(--fondo-2); box-shadow: inset 0 0 0 1px var(--linea); }
 .ap-barra__sep { width: 1px; align-self: stretch; margin: 6px 4px; background: var(--linea); }

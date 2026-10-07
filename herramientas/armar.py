@@ -18,7 +18,7 @@ def parcial(nombre, pagina):
     t = (PARCIALES / f"{nombre}.html").read_text().rstrip("\n")
     t = t.replace("{{marca}}", (PARCIALES / "marca.html").read_text().strip())
     t = t.replace("{{anio}}", str(datetime.date.today().year))
-    seccion = pagina.split("/")[0] if "/" in pagina else ""
+    seccion = pagina.split("/")[0] if "/" in pagina else ("inicio" if pagina == "index.html" else "")
     return re.sub(r"\{\{actual:([a-z-]+)\}\}", lambda m: ' aria-current="page"' if m.group(1) == seccion else "", t)
 
 
