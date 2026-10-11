@@ -4,7 +4,8 @@
    4. «Ver más artículos» ([data-mas]): trae tarjetas de las páginas de /articulos/ y las suma a la grilla, sin repetir.
    5. Mapa de expedición ([data-viaje]): el cohete recorre la ruta y enciende las paradas.
    6. Fachada de YouTube ([data-yt-lista]): miniatura del último video al acercarse; el reproductor real solo al hacer clic.
-   7. Método animado ([data-metodo]): marca [data-visible] mientras está en pantalla (la animación es CSS). */
+   7. Método animado ([data-metodo]): marca [data-visible] mientras está en pantalla (la animación es CSS).
+   8. Barra de acción fija ([data-barra-accion="#destino"], data-desde=".bloque"): aparece al pasar ese bloque y se esconde al llegar al destino. */
 (function () {
   var d = document;
   d.documentElement.setAttribute('data-js', '');
@@ -263,5 +264,16 @@
     c.addEventListener('scroll', function () { window.requestAnimationFrame(pintar); }, { passive: true });
     if (prev) prev.addEventListener('click', function () { ir(actual() - 1); });
     if (next) next.addEventListener('click', function () { ir(actual() + 1); });
+  });
+
+  // 8 · Barra de acción fija (celular): visible entre el final de [data-desde] y el comienzo del destino
+  [].forEach.call(d.querySelectorAll('[data-barra-accion]'), function (barra) {
+    var destino = d.querySelector(barra.getAttribute('data-barra-accion')), desde = d.querySelector(barra.getAttribute('data-desde'));
+    if (!destino || !desde || !window.IntersectionObserver) return;
+    var pasado = false, llegado = false;
+    var pintar = function () { if (pasado && !llegado) barra.setAttribute('data-visible', ''); else barra.removeAttribute('data-visible'); };
+    barra.hidden = false;
+    new IntersectionObserver(function (e) { pasado = !e[0].isIntersecting && e[0].boundingClientRect.top < 0; pintar(); }).observe(desde);
+    new IntersectionObserver(function (e) { llegado = e[0].isIntersecting || e[0].boundingClientRect.top < 0; pintar(); }).observe(destino);
   });
 })();
