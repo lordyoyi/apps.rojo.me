@@ -1,0 +1,37 @@
+/* Diagramas · tono azulillo (ordenar ideas, claridad). Los colores del diagrama son los de Órbita vía variables de Pele. */
+:root { --ap-azulillo-fondo: #1a1d26; }
+[data-theme="sol"] { --ap-azulillo-fondo: #e3e9f6; }
+
+.di-taller { grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); }
+.di-codigo { min-height: 320px; font: 400 15px/1.6 var(--font-mono); tab-size: 2; white-space: pre; }
+
+.di-ia { display: grid; gap: 10px; padding: 14px 16px; border-radius: var(--radius-sm); background: var(--ap-azulillo-fondo); }
+.di-ia p { margin: 0; font-size: 15px; line-height: 1.5; color: var(--texto-2); }
+.di-ia strong { color: var(--texto); }
+.di-ia__prompt { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.di-ia__prompt code { flex: 1 1 260px; padding: 10px 12px; border-radius: 10px; background: var(--fondo); font: 400 14px/1.45 var(--font-mono); color: var(--texto); }
+
+.di-ejemplos { display: grid; gap: 8px; font-size: 14px; color: var(--texto-2); }
+.di-ejemplos .ap-seg { justify-self: start; }
+.di-error[hidden] { display: none; }
+.di-error p { overflow-wrap: anywhere; }
+
+/* Lienzo: el diagrama sobre su fondo, con los colores de Órbita */
+.di-lienzo { --pele-font: "SUSE", "Helvetica Neue", Arial, sans-serif; --pele-font-mono: "SUSE Mono", ui-monospace, monospace; --pele-radius: 10px;
+  position: relative; min-height: 360px; display: grid; place-items: center; padding: clamp(16px, 3vw, 32px); border-radius: var(--radius-md); overflow: auto; }
+.di-lienzo[data-fondo="papel"] { background: #f2eadb;
+  --pele-bg: #f2eadb; --pele-fg: #141211; --pele-muted: #5a534b; --pele-line: #46403a; --pele-surface: #fbf7f0; --pele-surface-alt: #e9dfcc;
+  --pele-border: #c9bea9; --pele-accent: #e51735; --pele-critical: #c4122f; --pele-error: #c4122f;
+  --pele-series-1: #e51735; --pele-series-2: #ff7a29; --pele-series-3: #ffc933; --pele-series-4: #1f7a72; --pele-series-5: #6cc9bb; --pele-series-6: #46403a; --pele-series-7: #c4122f; --pele-series-8: #a39a8c; }
+.di-lienzo[data-fondo="noche"] { background: #13100f;
+  --pele-bg: #13100f; --pele-fg: #f4ede2; --pele-muted: #c9c0b3; --pele-line: #c9c0b3; --pele-surface: #2b2522; --pele-surface-alt: #1b1715;
+  --pele-border: #5a5048; --pele-accent: #ff7a29; --pele-critical: #ff7385; --pele-error: #ff7385;
+  --pele-series-1: #e51735; --pele-series-2: #ff7a29; --pele-series-3: #ffc933; --pele-series-4: #6cc9bb; --pele-series-5: #dce4f5; --pele-series-6: #c9c0b3; --pele-series-7: #ff7385; --pele-series-8: #a39a8c; }
+.di-lienzo__svg { width: 100%; display: grid; place-items: center; }
+.di-lienzo__svg svg { max-width: 100%; height: auto; }
+.di-lienzo:empty::before, .di-lienzo__svg:empty::before { content: "Tu diagrama aparece aquí"; color: #8a8074; font-size: 15px; }
+
+.di-mas { display: flex; flex-wrap: wrap; gap: 6px; }
+.di-credito { margin: 20px 0 0; font-size: 14px; color: var(--texto-3); }
+.di-credito a { color: var(--texto-2); }
+@media (max-width: 980px) { .di-taller { grid-template-columns: 1fr; } .di-vista { order: -1; } .di-codigo { min-height: 240px; } }

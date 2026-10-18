@@ -11,7 +11,7 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
 PARCIALES = RAIZ / "herramientas/parciales"
-PAGINAS = ["index.html", "404.html", "formato-linkedin/index.html", "carrusel/index.html", "teleprompter/index.html"]
+PAGINAS = ["index.html", "404.html", "formato-linkedin/index.html", "carrusel/index.html", "teleprompter/index.html", "diagramas/index.html"]
 
 
 def parcial(nombre, pagina):

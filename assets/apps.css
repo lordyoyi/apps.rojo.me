@@ -53,7 +53,8 @@ body { background: var(--fondo); color: var(--texto); font-family: var(--font-sa
 .ap-seg button:focus-visible { outline: 2px solid var(--foco); outline-offset: 2px; }
 
 /* ───────── Grilla de apps ───────── */
-.ap-apps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5); }
+.ap-apps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-5); }
+@media (max-width: 1180px) and (min-width: 981px) { .ap-apps { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .ap-app { display: grid; grid-template-rows: auto 1fr; padding: 0; overflow: hidden; text-decoration: none; color: inherit; transition: transform var(--dur-base) var(--ob-ease), box-shadow var(--dur-base); }
 .ap-app:hover { transform: translateY(-4px); box-shadow: var(--sombra-orbita-alta); }
 .ap-app:focus-visible { outline: 2px solid var(--foco); outline-offset: 3px; }
@@ -216,3 +217,15 @@ body { background: var(--fondo); color: var(--texto); font-family: var(--font-sa
 .ap-perdido { min-height: 62vh; display: grid; align-content: center; overflow: hidden; }
 .ap-perdido__planeta { position: absolute; right: 8%; top: 50%; transform: translateY(-50%); pointer-events: none; }
 @media (max-width: 860px) { .ap-perdido__planeta { display: none; } }
+
+/* Mini demo Diagramas (tono azulillo): un flujo chico con los colores de Órbita */
+:root { --ap-azulillo-fondo: #1a1d26; }
+[data-theme="sol"] { --ap-azulillo-fondo: #e3e9f6; }
+.ap-app__portada[data-tono="azulillo"] { background: radial-gradient(ellipse 80% 70% at 50% 110%, rgba(143, 168, 224, .3), transparent 70%), var(--ap-azulillo-fondo); }
+.ap-mini-diagrama { position: relative; width: 82%; max-width: 270px; transform: rotate(-2deg); }
+.ap-mini-diagrama .c { fill: var(--superficie); stroke: var(--anillo); stroke-width: 1.2; }
+.ap-mini-diagrama .d { fill: var(--superficie-2); stroke: var(--anillo); stroke-width: 1.2; }
+.ap-mini-diagrama .f { fill: #e51735; }
+.ap-mini-diagrama .l { fill: none; stroke: var(--texto-2); stroke-width: 1.4; }
+.ap-mini-diagrama text { font: 700 10.5px var(--font-sans); fill: var(--texto); text-anchor: middle; }
+.ap-mini-diagrama .tf { fill: #fff; }

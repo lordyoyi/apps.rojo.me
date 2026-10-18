@@ -8,6 +8,7 @@ Sitio estático para GitHub Pages (`CNAME` → apps.rojo.me), con el sistema de 
 | Formato para LinkedIn | `/formato-linkedin/` | Negrita, cursiva y listas con letras Unicode, historial y vista previa del feed con el corte «…más» |
 | Carrusel en PDF | `/carrusel/` | Texto separado por `---` → láminas en canvas → PDF (LinkedIn) o ZIP de PNG (Instagram). PDF y ZIP escritos a mano en `carrusel/archivos.js` |
 | Teleprompter | `/teleprompter/` | Guion a N palabras por minuto, espejo, cuenta regresiva y grabación con la cámara (MediaRecorder, MP4 o WebM) |
+| Diagramas | `/diagramas/` | Mermaid → SVG con [Pele](https://pele.run) (kepano, MIT; copiado en `diagramas/vendor/`) con colores Órbita (papel o noche), ejemplos, frase para pedírselo a la IA, PNG/SVG con la fuente incrustada, copiar imagen y link para compartir (el diagrama va comprimido en el `#`) |
 
 ## Cómo está armado
 
